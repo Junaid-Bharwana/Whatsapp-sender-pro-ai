@@ -1,9 +1,9 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { ConnectionStatus, Message, DashboardStats } from './types';
-import { SAMPLE_CONTACTS } from './constants';
-import QRScanner from './components/QRScanner';
-import MessageComposer from './components/MessageComposer';
+import { ConnectionStatus, Message, DashboardStats } from './types.ts';
+import { SAMPLE_CONTACTS } from './constants.tsx';
+import QRScanner from './components/QRScanner.tsx';
+import MessageComposer from './components/MessageComposer.tsx';
 
 const App: React.FC = () => {
   const [status, setStatus] = useState<ConnectionStatus>(ConnectionStatus.DISCONNECTED);
@@ -17,6 +17,7 @@ const App: React.FC = () => {
   });
 
   const scrollRef = useRef<HTMLDivElement>(null);
+  // Default to port 3001 for backend communication
   const BACKEND_URL = `http://${window.location.hostname}:3001`;
 
   const handleConnect = () => {
@@ -62,9 +63,10 @@ const App: React.FC = () => {
             totalSent: prev.totalSent + 1 
           }));
         } else {
-          throw new Error(data.error);
+          throw new Error(data.error || 'Unknown error from backend');
         }
       } catch (err) {
+        console.error('Send message failed:', err);
         setMessages(prev => prev.map(m => m.id === msgId ? { ...m, status: 'failed' } : m));
         setStats(prev => ({ 
           ...prev, 
@@ -182,6 +184,11 @@ const App: React.FC = () => {
                             <span className="text-[10px] font-bold text-slate-400">{msg.status.toUpperCase()}</span>
                         </div>
                     ))}
+                    {messages.length === 0 && (
+                        <div className="p-10 text-center text-slate-400 text-sm italic">
+                            No logs yet...
+                        </div>
+                    )}
                 </div>
             </div>
           </div>

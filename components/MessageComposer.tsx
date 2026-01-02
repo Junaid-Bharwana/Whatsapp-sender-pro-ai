@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { generateWhatsAppMessage } from '../services/geminiService';
+import { generateWhatsAppMessage } from '../services/geminiService.ts';
 
 interface MessageComposerProps {
   onSend: (recipient: string, message: string) => void;

@@ -17,6 +17,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Serve static frontend files from the root directory
+app.use(express.static(__dirname));
+
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: { origin: "*" }
@@ -60,11 +63,16 @@ async function connectToWhatsApp() {
     // API Endpoint to send message
     app.post('/send-message', async (req, res) => {
         const { number, message } = req.body;
+        if (!number || !message) {
+            return res.status(400).json({ success: false, error: 'Missing number or message' });
+        }
+        
         try {
             const jid = `${number.replace(/[^0-9]/g, '')}@s.whatsapp.net`;
             await sock.sendMessage(jid, { text: message });
             res.status(200).json({ success: true });
         } catch (err) {
+            console.error('Baileys Send Error:', err);
             res.status(500).json({ success: false, error: err.message });
         }
     });
@@ -72,7 +80,13 @@ async function connectToWhatsApp() {
 
 connectToWhatsApp();
 
+// Fallback to index.html for SPA-style routing
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
 const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {
-    console.log(`Baileys Backend running on port ${PORT}`);
+    console.log(`Baileys Backend & Frontend running on port ${PORT}`);
+    console.log(`Access your app at http://localhost:${PORT}`);
 });
