@@ -1,0 +1,7 @@
+{
+  "name": "WhatsApp AI Sender Pro",
+  "description": "A professional WhatsApp messaging dashboard featuring AI-powered message generation with Gemini, QR-based authentication simulation, and bulk messaging management.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
